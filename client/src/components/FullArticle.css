@@ -1,0 +1,16 @@
+.FullArticle{
+    width: 1000px;
+    height: 800px;
+    background-color: #fff;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.FullArticle_title{
+    text-align: left;
+}
+
+.FullArticle_text{
+    text-align: left;
+}
