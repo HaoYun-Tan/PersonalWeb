@@ -1,17 +1,57 @@
 import {useEffect, useState} from 'react'
-import test_articles from '../data/test/articles.json'
 import ArticleAbstractCard from '../components/ArticleAbstractCard'
 import FullArticle from '../components/FullArticle';
 
 interface EventShowFullArticle {
+    id: number
     title: string,
     text: string,
+    created_at: string,
+    updated_at: string,
     show: boolean
 }
-function Home(){
-    const [eventShowFullArticle, setEventShowFullArticle] = useState<EventShowFullArticle>({title: '', text: '', show: false});
 
-    return(
+interface ArticleBriefItem {
+    id: number,
+    title: string,
+    abstract: string,
+    created_at: string,
+    updated_at: string,
+    user_id: number
+}
+
+interface ArticleBriefJsonItem {
+    ID: number,
+    Title: string,
+    Abstract: string,
+    CreatedAt: string,
+    UpdatedAt: string,
+    UserId: number
+}
+
+function Home() {
+    const [eventShowFullArticle, setEventShowFullArticle] = useState<EventShowFullArticle>({id: 0, title: '', text: '', created_at: '', updated_at: '', show: false});
+
+    const [allArticleBriefs, setAllArticleBriefs] = useState<ArticleBriefItem[]>([]);
+    const [isArticleBriefsChange, setIsArticleBriefsChange] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!isArticleBriefsChange) {
+            fetch('http://localhost:8080/api/articles?user_id=1')
+            .then(rsp => rsp.json())
+            .then(json => {
+                const article_briefs = json.data.map((item: any) => {
+                    return { id: item.ID, title: item.Title, abstract: item.Abstract, created_at: item.CreatedAt, updated_at: item.UpdatedAt, user_id: item.UserId }
+                })
+
+                setAllArticleBriefs(article_briefs)
+                setIsArticleBriefsChange(true)
+            })
+        }
+        
+    }, [allArticleBriefs, isArticleBriefsChange])
+
+    return (
         <div>
             <p>
                 Home
@@ -19,10 +59,11 @@ function Home(){
 
             <div className = "Homebody">
             {
-                test_articles.data.map( article =>
+                allArticleBriefs.map( article =>
                     <ArticleAbstractCard 
+                        key={article.id}
+                        id={article.id}
                         title={article.title}
-                        text={article.text}
                         abstract={article.abstract}
                         setEventShowFullArticle={setEventShowFullArticle}
                     />
@@ -32,8 +73,11 @@ function Home(){
             {
                 eventShowFullArticle.show ?
                     (<FullArticle
+                        id={eventShowFullArticle.id}
                         title={eventShowFullArticle.title}
                         text={eventShowFullArticle.text}
+                        created_at={eventShowFullArticle.created_at}
+                        updated_at={eventShowFullArticle.updated_at}
                     />)
                     :
                     (<></>)
