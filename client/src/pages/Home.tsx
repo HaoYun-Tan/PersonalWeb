@@ -78,6 +78,7 @@ function Home() {
                         text={eventShowFullArticle.text}
                         created_at={eventShowFullArticle.created_at}
                         updated_at={eventShowFullArticle.updated_at}
+                        setEventShowFullArticle={setEventShowFullArticle}
                     />)
                     :
                     (<></>)
