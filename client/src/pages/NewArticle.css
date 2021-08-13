@@ -16,3 +16,7 @@
     justify-content: flex-start;
     align-items: center;
 }
+
+.NewArticle-Toast {
+    position: absolute;
+}
