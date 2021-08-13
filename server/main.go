@@ -3,6 +3,7 @@ package main
 import (
 	"personal-web-server/database"
 	"personal-web-server/service/articles"
+	"personal-web-server/service/comments"
 	"personal-web-server/service/users"
 
 	"github.com/gin-contrib/cors"
@@ -14,6 +15,7 @@ func main() {
 
 	users.AutoMigrate()
 	articles.AutoMigrate()
+	comments.AutoMigrate()
 
 	r := gin.Default()
 	r.Use(cors.Default())
@@ -25,6 +27,7 @@ func main() {
 	})
 
 	articles.RegisterAllRoutes(r.Group("/api"))
+	comments.RegisterAllRoutes(r.Group("/api"))
 
 	r.Run()
 }

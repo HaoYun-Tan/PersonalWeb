@@ -120,7 +120,7 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 			return
 		}
 
-		article := Article{Title: Av.Title, Abstract: util.GenerateAbstract(Av.Text), Text: Av.Text, UserId: Av.UserId}
+		article := Article{Title: Av.Title, Abstract: util.GenerateAbstract(Av.Text, 512), Text: Av.Text, UserId: Av.UserId}
 		result = database.GetDB().Create(&article)
 
 		if result.Error != nil {

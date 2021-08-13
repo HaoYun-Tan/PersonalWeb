@@ -1,7 +1,7 @@
 package util
 
-func GenerateAbstract(fulltext string) string {
-	maxAbstractLen := 512
+func GenerateAbstract(fulltext string, maxAbstractLen int) string {
+
 	if len(fulltext) < maxAbstractLen {
 		maxAbstractLen = len(fulltext)
 	}
