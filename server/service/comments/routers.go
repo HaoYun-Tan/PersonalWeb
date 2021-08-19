@@ -6,6 +6,7 @@ import (
 	"personal-web-server/common/util"
 	"personal-web-server/database"
 	"personal-web-server/service/articles"
+	"personal-web-server/service/permissions"
 	"strconv"
 	"time"
 
@@ -41,6 +42,22 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 			return
 		}
 
+		id_user_u64, err_user := strconv.ParseUint(c.Query("user_id"), 10, 64)
+		id_user := uint(id_user_u64)
+
+		if err_user != nil {
+			c.JSON(400, gin.H{
+				"msg": "invalid id, User id should be an interger",
+			})
+			return
+		}
+
+		if !permissions.IsUserHasCommentReadPerm(id_user) {
+			c.JSON(401, gin.H{
+				"msg": "No Permission",
+			})
+			return
+		}
 		var comments []Comment
 		result := database.GetDB().Find(&comments, "article_id = ?", id)
 		if result.Error != nil {
@@ -79,7 +96,22 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 		// check permission
 		//
 		//
+		id_user_u64, err_user := strconv.ParseUint(c.Query("user_id"), 10, 64)
+		id_user := uint(id_user_u64)
 
+		if err_user != nil {
+			c.JSON(400, gin.H{
+				"msg": "invalid id, User id should be an interger",
+			})
+			return
+		}
+
+		if !permissions.IsUserHasCommentReadPerm(id_user) {
+			c.JSON(401, gin.H{
+				"msg": "No Permission",
+			})
+			return
+		}
 		// find the article
 		comment := Comment{}
 		result := database.GetDB().First(&comment, "id = ?", comment_id)
@@ -111,6 +143,13 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 		if result.Error != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"msg": "can not find article",
+			})
+			return
+		}
+
+		if !permissions.IsUserHasCommentWritePerm(Av.UserId) {
+			c.JSON(401, gin.H{
+				"msg": "No Permission",
 			})
 			return
 		}

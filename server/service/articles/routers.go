@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"personal-web-server/common/util"
 	"personal-web-server/database"
+	"personal-web-server/service/permissions"
 	"personal-web-server/service/users"
 	"strconv"
 	"time"
@@ -66,7 +67,8 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 	r.GET("/article", func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Query("article_id"))
 
-		id_user, err_user := strconv.Atoi(c.Query("user_id"))
+		id_user_u64, err_user := strconv.ParseUint(c.Query("user_id"), 10, 64)
+		id_user := uint(id_user_u64)
 
 		if err != nil {
 			c.JSON(400, gin.H{
@@ -85,6 +87,13 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 		// check permission
 		//
 		//
+
+		if !permissions.IsUserHasArticleReadPerm(id_user) {
+			c.JSON(401, gin.H{
+				"msg": "No Permission",
+			})
+			return
+		}
 
 		// find the article
 		article := Article{}
@@ -116,6 +125,13 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 		if result.Error != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"msg": "can not find user",
+			})
+			return
+		}
+
+		if !permissions.IsUserHasArticleWritePerm(user.ID) {
+			c.JSON(401, gin.H{
+				"msg": "No Permission",
 			})
 			return
 		}

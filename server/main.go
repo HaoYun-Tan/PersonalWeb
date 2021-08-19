@@ -4,6 +4,7 @@ import (
 	"personal-web-server/database"
 	"personal-web-server/service/articles"
 	"personal-web-server/service/comments"
+	"personal-web-server/service/permissions"
 	"personal-web-server/service/users"
 
 	"github.com/gin-contrib/cors"
@@ -16,6 +17,7 @@ func main() {
 	users.AutoMigrate()
 	articles.AutoMigrate()
 	comments.AutoMigrate()
+	permissions.AutoMigrate()
 
 	r := gin.Default()
 	r.Use(cors.Default())
