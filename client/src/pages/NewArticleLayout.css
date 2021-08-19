@@ -1,0 +1,22 @@
+.NewArticleLayout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    padding: 20px;
+}
+
+.NewArticleLayout-BtnCreateArticle {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.NewArticle-Toast {
+    position: absolute;
+}

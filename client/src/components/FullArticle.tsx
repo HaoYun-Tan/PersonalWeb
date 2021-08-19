@@ -17,7 +17,7 @@ function FullArticle(props: FullArticleData){
     useLayoutEffect(() => {
         if (selfRef.current) {
             const computedLeft = window.innerWidth / 2 - selfRef.current.getBoundingClientRect().width / 2;
-            selfRef.current.style.left = `${computedLeft}`
+            selfRef.current.style.left = `${computedLeft}px`
         }
     }, [])
 
