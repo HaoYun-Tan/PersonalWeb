@@ -6,5 +6,5 @@ func GenerateAbstract(fulltext string, maxAbstractLen int) string {
 		maxAbstractLen = len(fulltext)
 	}
 
-	return fulltext[0 : maxAbstractLen-1]
+	return fulltext[0:maxAbstractLen]
 }

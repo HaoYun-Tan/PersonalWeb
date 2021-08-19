@@ -14,15 +14,15 @@ interface FullArticleData {
 function FullArticle(props: FullArticleData){
     const { id, title, text, created_at, updated_at, setEventShowFullArticle} = props;
     const selfRef = useRef<HTMLInputElement>(null)
-    const [x, setX] = useState<number>(0)
     useLayoutEffect(() => {
         if (selfRef.current) {
-            setX(window.innerWidth / 2 - selfRef.current.getBoundingClientRect().width / 2)
+            const computedLeft = window.innerWidth / 2 - selfRef.current.getBoundingClientRect().width / 2;
+            selfRef.current.style.left = `${computedLeft}`
         }
     }, [])
 
     return(
-        <div ref={selfRef} className = "FullArticle" style={{ left: `${x}px` }}>
+        <div ref={selfRef} className = "FullArticle">
             <div className = "FullArticle_top">
                 <div>
                     <div>
