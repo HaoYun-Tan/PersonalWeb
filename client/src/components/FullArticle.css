@@ -12,10 +12,12 @@
 
 .FullArticle_title{
     text-align: left;
+    overflow-wrap: break-word;
 }
 
 .FullArticle_text{
     text-align: left;
+    overflow-wrap: break-word;
 }
 
 .FullArticle_top{
