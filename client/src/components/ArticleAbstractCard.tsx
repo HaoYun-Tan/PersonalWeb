@@ -20,8 +20,8 @@ function ArticleAbstractCard(props: ArticleAbstractCardData) {
             </div>
             <div className = "ArticleAbstractCard_Button">
                 <Button variant="outline-info" onClick = {e => ReadMoreBtnOnClick(props)}>
-                Read More
-                 </Button>
+                    Expand
+                </Button>
             </div>
             
         </div>
