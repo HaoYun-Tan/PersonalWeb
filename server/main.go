@@ -30,6 +30,7 @@ func main() {
 
 	articles.RegisterAllRoutes(r.Group("/api"))
 	comments.RegisterAllRoutes(r.Group("/api"))
+	permissions.RegisterAllRoutes(r.Group("/api"))
 
 	r.Run()
 }

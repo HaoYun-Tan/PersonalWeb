@@ -4,10 +4,6 @@ import FullArticle from '../components/FullArticle';
 
 interface EventShowFullArticle {
     id: number
-    title: string,
-    text: string,
-    created_at: string,
-    updated_at: string,
     show: boolean
 }
 
@@ -20,17 +16,8 @@ interface ArticleBriefItem {
     user_id: number
 }
 
-interface ArticleBriefJsonItem {
-    ID: number,
-    Title: string,
-    Abstract: string,
-    CreatedAt: string,
-    UpdatedAt: string,
-    UserId: number
-}
-
 function Home() {
-    const [eventShowFullArticle, setEventShowFullArticle] = useState<EventShowFullArticle>({id: 0, title: '', text: '', created_at: '', updated_at: '', show: false});
+    const [eventShowFullArticle, setEventShowFullArticle] = useState<EventShowFullArticle>({id: 0, show: false});
 
     const [allArticleBriefs, setAllArticleBriefs] = useState<ArticleBriefItem[]>([]);
     const [isArticleBriefsChange, setIsArticleBriefsChange] = useState<boolean>(false);
@@ -74,10 +61,6 @@ function Home() {
                 eventShowFullArticle.show ?
                     (<FullArticle
                         id={eventShowFullArticle.id}
-                        title={eventShowFullArticle.title}
-                        text={eventShowFullArticle.text}
-                        created_at={eventShowFullArticle.created_at}
-                        updated_at={eventShowFullArticle.updated_at}
                         setEventShowFullArticle={setEventShowFullArticle}
                     />)
                     :

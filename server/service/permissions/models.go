@@ -52,7 +52,7 @@ func IsUserHasArticleWritePerm(user_id uint) bool {
 }
 
 func IsUserHasCommentReadPerm(user_id uint) bool {
-	return CheckUserCommentPerm(user_id) >= READ_PERM
+	return IsUserHasArticleReadPerm(user_id) && CheckUserCommentPerm(user_id) >= READ_PERM
 }
 
 func IsUserHasCommentWritePerm(user_id uint) bool {

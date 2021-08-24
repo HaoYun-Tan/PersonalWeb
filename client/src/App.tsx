@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import { HashRouter as Router, Route, NavLink } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
@@ -7,10 +7,31 @@ import NewArticle from './pages/NewArticle'
 
 
 function App() {
+  const [newArticlePerm, setNewArticlePerm] = useState<boolean>(false);
+
   const routes = [
-    {path:"/", name :"Home", Component: Home},
-    {path:"/article/new", name : "New Article", Component: NewArticle}
+    {path:"/", name :"Home", Component: Home, show: true},
+    {path:"/article/new", name : "New Article", Component: NewArticle, show: newArticlePerm}
   ]
+
+  useEffect(() => {
+    fetch(`http://localhost:8080/api/permissions/${1}`)
+          .then(rsp => {
+            if (rsp.status === 200) {
+                return rsp.json()
+            } else {
+                throw Error('no permission')
+            }
+          })
+          .then(json => {
+            setNewArticlePerm(json.data.permissions.articles.write)
+          })
+          .catch(e => {
+            setNewArticlePerm(false)
+            console.log(e)
+          })
+  }, [])
+
   return (
     <div className="App">
       <Router>
@@ -18,7 +39,7 @@ function App() {
           <Container>
             <Nav className = "mx-auto">
             {
-              routes.map(route => (
+              routes.filter(route => route.show ).map(route => (
                 <Nav.Link
                   key={route.path}
                   as={NavLink}
