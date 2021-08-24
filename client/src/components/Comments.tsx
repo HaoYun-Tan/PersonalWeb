@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import CommentAbstractCard from './CommentAbstractCard'
+import CommentCard from './CommentCard'
 
-export interface CommentBriefItem {
+export interface CommentItemData {
     id: number,
     title: string,
+    text: string,
     abstract: string,
     created_at: string,
     updated_at: string,
@@ -11,9 +12,10 @@ export interface CommentBriefItem {
     article_id: number
 }
 
-const emptyCommentBriefItem = (): CommentBriefItem =>({
+const emptyCommentItemData = (): CommentItemData =>({
     id: -1,
     title: "",
+    text: "",
     abstract: "",
     created_at: "",
     updated_at: "",
@@ -27,16 +29,13 @@ interface CommentsProps {
 
 function Comments(props: CommentsProps) {
     const {articleId} = props
-    const [commentsData, setCommentsData] = useState<CommentBriefItem[]>([])
+    const [commentsData, setCommentsData] = useState<CommentItemData[]>([])
     useEffect(() => {
         fetch(`http://localhost:8080/api/articles/${articleId}/comments?user_id=${1}`)
-        .then(rsp => {
-            console.log('#####', rsp)
-            return rsp.json()
-        })
+        .then(rsp => rsp.json())
         .then(json => {
             const comments_briefs = json.data.map((item: any) => {
-                return { id: item.ID, title: item.Title, abstract: item.Abstract, created_at: item.CreatedAt, updated_at: item.UpdatedAt, user_id: item.UserId, article_id: articleId }
+                return { id: item.ID, title: item.Title, text: "", abstract: item.Abstract, created_at: item.CreatedAt, updated_at: item.UpdatedAt, user_id: item.UserId, article_id: articleId }
             })
             setCommentsData(comments_briefs)
         })
@@ -49,7 +48,7 @@ function Comments(props: CommentsProps) {
         <div>
         {
             commentsData.map(comment => 
-                <CommentAbstractCard
+                <CommentCard
                     key={comment.id}
                     data={comment}
                 />
