@@ -50,19 +50,11 @@ func GetUserIdFromContext(c *gin.Context) (uint, error) {
 	return userContext.ID, nil
 }
 
-func RegisterAllRoutes(r *gin.RouterGroup) {
-
+func RegisterNonAuthRoutes(r *gin.RouterGroup) {
 	r.GET("/articles", func(c *gin.Context) {
-		userId, errUserId := GetUserIdFromContext(c)
-		if errUserId != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"msg": "system internal error",
-			})
-			return
-		}
 
 		var articles []Article
-		result := database.GetDB().Find(&articles, "user_id = ?", userId)
+		result := database.GetDB().Find(&articles)
 		if result.Error != nil {
 			return
 		}
@@ -84,6 +76,9 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 			"data": articlesBrief,
 		})
 	})
+}
+
+func RegisterAllRoutes(r *gin.RouterGroup) {
 
 	r.GET("/article", func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Query("article_id"))

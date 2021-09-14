@@ -26,6 +26,7 @@ func main() {
 
 	// non auth routes
 	users.RegisterNonAuthRoutes(routerGroupAPI)
+	articles.RegisterNonAuthRoutes(routerGroupAPI)
 
 	routerGroupAPI.Use(users.AuthMiddleware(true))
 
