@@ -22,15 +22,17 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	r.GET("/api/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"msg": "pong",
-		})
-	})
+	routerGroupAPI := r.Group("/api")
 
-	articles.RegisterAllRoutes(r.Group("/api"))
-	comments.RegisterAllRoutes(r.Group("/api"))
-	permissions.RegisterAllRoutes(r.Group("/api"))
+	// non auth routes
+	users.RegisterNonAuthRoutes(routerGroupAPI)
+
+	routerGroupAPI.Use(users.AuthMiddleware(true))
+
+	// auth routes
+	articles.RegisterAllRoutes(routerGroupAPI)
+	comments.RegisterAllRoutes(routerGroupAPI)
+	permissions.RegisterAllRoutes(routerGroupAPI)
 
 	r.Run()
 }

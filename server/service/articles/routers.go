@@ -1,6 +1,7 @@
 package articles
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"personal-web-server/common/util"
@@ -14,9 +15,8 @@ import (
 )
 
 type ArticleValidator struct {
-	Title  string `form:"title" json:"title"  binding:"required"`
-	Text   string `form:"text" json:"text" `
-	UserId uint   `form:"user_id" json:"user_id" binding:"required"`
+	Title string `form:"title" json:"title"  binding:"required"`
+	Text  string `form:"text" json:"text" `
 }
 
 type ArticleBrief struct {
@@ -28,20 +28,41 @@ type ArticleBrief struct {
 	UpdatedAt time.Time
 }
 
+func GetUserContext(c *gin.Context) (users.UserContext, error) {
+	userContextInterface, exists := c.Get("user_context")
+
+	if exists {
+		userContext, ok := userContextInterface.(users.UserContext)
+		if ok {
+			return userContext, nil
+		}
+	}
+
+	return users.UserContext{}, errors.New("failed to get user context")
+}
+
+func GetUserIdFromContext(c *gin.Context) (uint, error) {
+	userContext, err := GetUserContext(c)
+	if err != nil {
+		return 0, err
+	}
+
+	return userContext.ID, nil
+}
+
 func RegisterAllRoutes(r *gin.RouterGroup) {
 
 	r.GET("/articles", func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Query("user_id"))
-
-		if err != nil {
-			c.JSON(400, gin.H{
-				"msg": "user id should be an interger",
+		userId, errUserId := GetUserIdFromContext(c)
+		if errUserId != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"msg": "system internal error",
 			})
 			return
 		}
 
 		var articles []Article
-		result := database.GetDB().Find(&articles, "user_id = ?", id)
+		result := database.GetDB().Find(&articles, "user_id = ?", userId)
 		if result.Error != nil {
 			return
 		}
@@ -67,9 +88,6 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 	r.GET("/article", func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Query("article_id"))
 
-		id_user_u64, err_user := strconv.ParseUint(c.Query("user_id"), 10, 64)
-		id_user := uint(id_user_u64)
-
 		if err != nil {
 			c.JSON(400, gin.H{
 				"msg": "invalid id, article id should be an interger",
@@ -77,18 +95,15 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 			return
 		}
 
-		if err_user != nil {
-			c.JSON(400, gin.H{
-				"msg": "invalid user id, user id should be an interger",
+		userId, errUserId := GetUserIdFromContext(c)
+		if errUserId != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"msg": "system internal error",
 			})
 			return
 		}
 
-		// check permission
-		//
-		//
-
-		if !permissions.IsUserHasArticleReadPerm(id_user) {
+		if !permissions.IsUserHasArticleReadPerm(userId) {
 			c.JSON(401, gin.H{
 				"msg": "No Permission",
 			})
@@ -97,7 +112,7 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 
 		// find the article
 		article := Article{}
-		result := database.GetDB().First(&article, "id = ? and user_id = ?", id, id_user)
+		result := database.GetDB().First(&article, "id = ? and user_id = ?", id, userId)
 		if result.Error != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"msg": "User Id or Article Id invalid",
@@ -121,7 +136,15 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 			return
 		}
 
-		result := database.GetDB().First(&user, "id = ?", Av.UserId)
+		userId, errUserId := GetUserIdFromContext(c)
+		if errUserId != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"msg": "system internal error",
+			})
+			return
+		}
+
+		result := database.GetDB().First(&user, "id = ?", userId)
 		if result.Error != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"msg": "can not find user",
@@ -136,7 +159,7 @@ func RegisterAllRoutes(r *gin.RouterGroup) {
 			return
 		}
 
-		article := Article{Title: Av.Title, Abstract: util.GenerateAbstract(Av.Text, 512), Text: Av.Text, UserId: Av.UserId}
+		article := Article{Title: Av.Title, Abstract: util.GenerateAbstract(Av.Text, 512), Text: Av.Text, UserId: userId}
 		result = database.GetDB().Create(&article)
 
 		if result.Error != nil {
